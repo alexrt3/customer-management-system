@@ -37,4 +37,4 @@ The **Card Management System** serves as a centralized backend for financial ser
 
 ## Logging & Error Handling
 * **SLF4J/Logback:** Integrated the SLF4J logging framework to track authentication success/failure and API requests.
-* **Global Exception Handler**: Implemented a `@ControllerAdvice` component to watch for and catch system-wide errors and reutrn consistent, user-friendly JSON error messages instead of raw stack traces and default Java message. 
+* **Global Exception Handler**: Implemented a `@ControllerAdvice` component to watch for and catch system-wide errors and return consistent, user-friendly JSON error messages instead of raw stack traces and default Java messages. 
