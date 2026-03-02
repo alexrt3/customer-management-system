@@ -2,6 +2,7 @@ package com.example.card_management_system.dto;
 
 import com.example.card_management_system.util.inputValidationUtil.State;
 import com.example.card_management_system.util.inputValidationUtil.ValueOfEnum;
+import com.example.card_management_system.validation.RequiredAddress;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@RequiredAddress
 public class CustomerUpdateDTO {
 
     @Email(message ="Please type in a valid email address of format example@email.com")
