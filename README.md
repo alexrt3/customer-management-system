@@ -8,8 +8,10 @@ The **Card Management System** serves as a centralized backend for financial ser
 ---
 ## Technology Stack
 * **Java**: version 17
+* **Spring Boot: version 4.0.2
 * **JDK**: Eclipse Temurin 25
 * **Database**: PostgreSQL
+* **SLF4J: version 1.7.7
 
 ## Key Accomplishments 
 * **Secure Authentication Pipeline**: Successfully transitioned from basic request-body credentials to a dual layered **Basic Auth** (for login) and **JWT Bearer Auth** (for stateless session management) system.
