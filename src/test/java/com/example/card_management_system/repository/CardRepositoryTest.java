@@ -37,6 +37,8 @@ class CardRepositoryTest {
         UUID cardId = UUID.randomUUID();
         UUID cardId_2 = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
+        UUID accountNumber = UUID.randomUUID();
+        UUID accountNumber2 = UUID.randomUUID();
 
         testCustomer = Customer.builder()
                 .customerId(customerId)
@@ -55,6 +57,7 @@ class CardRepositoryTest {
 
         testCard = Card.builder()
                 .accountId(cardId)
+                .accountNumber(accountNumber)
                 .cardNumber("6011111111111117")
                 .cardType(CardType.CREDIT)
                 .cardHolderName("card holder name")
@@ -68,6 +71,7 @@ class CardRepositoryTest {
         //Save another card for the same customer
         testCard_2 = Card.builder()
                 .accountId(cardId_2)
+                .accountNumber(accountNumber2)
                 .cardNumber("4111111111111111")
                 .cardType(CardType.CREDIT)
                 .cardHolderName("card holder name")

@@ -318,6 +318,7 @@ class CardManagementControllerMockMvcTest {
 
         Card testCard = Card.builder()
                             .accountId(accountId)
+                            .accountNumber(UUID.randomUUID())
                             .cardNumber("6011111111111117")
                             .cardType(Card.CardType.CREDIT)
                             .cardHolderName("card holder name")
@@ -330,6 +331,7 @@ class CardManagementControllerMockMvcTest {
 
         Card testCard_2 = Card.builder()
                               .accountId(accountId_2)
+                              .accountNumber(UUID.randomUUID())
                               .cardNumber("4111111111111111")
                               .cardType(Card.CardType.CREDIT)
                               .cardHolderName("card holder name")

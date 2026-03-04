@@ -38,6 +38,7 @@ public class CardService {
             Card newCard = cardMapper.requestDtoToCard(cardRequestDTO);
 
             newCard.setAccountId(UUID.randomUUID());
+            newCard.setAccountNumber(UUID.randomUUID());
             newCard.setActive(true);
             newCard.setSecurityCode(generateSecurityCode());
 
@@ -47,7 +48,6 @@ public class CardService {
             return cardMapper.cardToResponseDto(savedCard);
 
         } catch (RuntimeException e) {
-            // TODO: Custom Exception?
             log.error("Error while creating card: {}:", e.getMessage());
             throw new RuntimeException("Failed to process card request: " + e.getMessage());
         }

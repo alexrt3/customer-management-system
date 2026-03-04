@@ -12,31 +12,21 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 
-
-
 @Entity
-@Table(name="card")
+@Table(name = "card")
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PUBLIC, force = true)
+@NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 @Builder
 public class Card {
-    /*
-        1. Id (UUID) – Unique Identifier for each card
-        2. CardNumber(String)– 16-digit credit/debit card number
-        3. cardType(Enum): type of card (e.g. Credit, Debit)
-        4. expiryDate(LocalDate): Expiration Date of card in YYYYMM format
-        5. cardHolderName(String): Name of the card holder
-        6. isActive(Boolean): Status of the card (active/inactive)
-        7. CreditLimit(BigDecimal) – Credit Limit on the credit card
-        8. SecurityCode (CVV)(String) - 3-digit code on the back of the card
-    */
 
     @Id
-    //@GeneratedValue
-    @Column (name="id", nullable = false, unique = true)
+    @Column(name = "account_id", nullable = false, unique = true)
     private UUID accountId;
+
+    @Column(name = "account_number", nullable = false, unique = true)
+    private UUID accountNumber;
 
     @NotBlank
     @CreditCardNumber
@@ -45,7 +35,7 @@ public class Card {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name ="card_type", nullable = false)
+    @Column(name = "card_type", nullable = false)
     private CardType cardType;
 
     @NotNull
@@ -73,7 +63,7 @@ public class Card {
 
 
     //CARD TYPE ENUM
-    public enum CardType{
+    public enum CardType {
         CREDIT,
         DEBIT,
         LOYALTY,
