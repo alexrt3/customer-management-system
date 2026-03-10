@@ -1,8 +1,10 @@
-package com.example.card_management_system.controller;
+package com.example.card_management_system.controller.v1;
 
 import com.example.card_management_system.dto.CardResponseDTO;
 import com.example.card_management_system.dto.CardUpdateDTO;
 import com.example.card_management_system.dto.CreateCardRequestDTO;
+import com.example.card_management_system.dto.v1.CardResponseV1DTO;
+import com.example.card_management_system.dto.v1.CreateCardRequestV1DTO;
 import com.example.card_management_system.entity.Card;
 import com.example.card_management_system.mapper.CardMapper;
 import com.example.card_management_system.service.CardService;
@@ -16,43 +18,44 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+//TODO: MOVE TO CARD CONTROLLER AND MOVE V1 TO METHOD LEVEL MAPPING
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/cards")
-public class CardController {
+@RequestMapping("/api/v1/cards")
+public class CardControllerV1 {
 
     private final CardService cardService;
     private final CardMapper cardMapper;
 
     @PostMapping("/create")
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CardResponseDTO> createCard(@Valid @RequestBody CreateCardRequestDTO request) {
+    public ResponseEntity<CardResponseV1DTO> createCard(@Valid @RequestBody CreateCardRequestV1DTO request) {
         log.info("POST /cards - creating card for customer with customerId={}", request.getCustomerId());
 
-        Card newCard = cardMapper.requestDtoToCard(request);
+        Card newCard = cardMapper.requestV1DtoToCard(request);
 
         Card created = cardService.createNewCard(newCard);
 
-        CardResponseDTO responseDTO = cardMapper.cardToResponseDto(created);
+        CardResponseV1DTO cardResponseV1DTO = cardMapper.cardToResponseV1Dto(created);
 
         log.info("POST /cards - successfully created card for customer={}", created.getCardHolderName());
-        return ResponseEntity.status(201).body(responseDTO);
+        return ResponseEntity.status(201).body(cardResponseV1DTO);
     }
 
     @GetMapping("/find/{accountId}")
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CardResponseDTO> getCardById(@PathVariable String accountId) {
+    public ResponseEntity<CardResponseV1DTO> getCardById(@PathVariable String accountId) {
         log.info("GET /cards/{}- retrieving card", accountId);
 
         Card card = cardService.getCardById(accountId);
 
-        CardResponseDTO retrieved = cardMapper.cardToResponseDto(card);
+        CardResponseV1DTO retrieved = cardMapper.cardToResponseV1Dto(card);
 
         log.info("GET /cards/{}- successfully retrieved card", accountId);
         return ResponseEntity.ok(retrieved);
     }
-
 
     @PutMapping("/update/{accountId}")
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))

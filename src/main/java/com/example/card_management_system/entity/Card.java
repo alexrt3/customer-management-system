@@ -57,6 +57,12 @@ public class Card {
     @Column(name = "security_code", nullable = false, length = 3)
     private String securityCode;
 
+    @Column(name = "digital_card_only")
+    private Boolean digitalCardOnly;
+
+    @Column(name = "daily_limit")
+    private BigDecimal dailyLimit;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;

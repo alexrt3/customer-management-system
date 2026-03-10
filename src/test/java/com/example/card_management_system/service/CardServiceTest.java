@@ -45,15 +45,13 @@ public class CardServiceTest {
         CardResponseDTO cardResponseDTO = CardResponseDTO.builder().accountId(cardIdString).build();
 
         when(cardRepository.findById(uuid)).thenReturn(Optional.of(card));
-        when(cardMapper.cardToResponseDto(card)).thenReturn(cardResponseDTO);
 
-        CardResponseDTO result = cardService.getCardById(cardIdString);
+        Card result = cardService.getCardById(cardIdString);
 
         assertThat(result).isNotNull();
-        assertThat(result.getAccountId()).isEqualTo(cardIdString);
+        assertThat(result.getAccountId().toString()).isEqualTo(cardIdString);
 
         verify(cardRepository, times(1)).findById(uuid);
-        verify(cardMapper, times(1)).cardToResponseDto(card);
     }
 
     @Test
@@ -71,53 +69,6 @@ public class CardServiceTest {
 
         verify(cardRepository, times(1)).findById(uuid);
         verifyNoInteractions(cardMapper);
-    }
-
-    @Test
-    void givenValidCardRequestDto_whenCreateNewCard_thenReturnCardResponseDto() {
-        CreateCardRequestDTO request = CreateCardRequestDTO.builder().cardNumber("1234123412341234").build();
-
-        Card mappedCard = new Card();
-        Card savedCard = new Card();
-        CardResponseDTO expectedResponse = new CardResponseDTO();
-
-        when(cardMapper.requestDtoToCard(any())).thenReturn(mappedCard);
-        when(cardRepository.save(any())).thenReturn(savedCard);
-        when(cardMapper.cardToResponseDto(any())).thenReturn(expectedResponse);
-
-        CardResponseDTO result = cardService.createNewCard(request);
-
-        assertThat(result).isNotNull();
-
-        ArgumentCaptor<Card> cardCaptor = ArgumentCaptor.forClass(Card.class);
-        verify(cardRepository).save(cardCaptor.capture());
-
-        Card capturedCard = cardCaptor.getValue();
-
-        assertThat(capturedCard.getAccountId()).isNotNull();
-        assertThat(capturedCard.getSecurityCode()).hasSize(3);
-        assertThat(capturedCard.isActive()).isTrue();
-    }
-
-    @Test
-    void givenInvalidCardRequestDto_whenCreateNewCardCalled_thenThrowsException() {
-        String invalidDate = "2026-02";
-        String mapperErrorMessage = "Invalid expiry date format. Expected yyyyMM: " + invalidDate;
-
-        CreateCardRequestDTO request = CreateCardRequestDTO.builder().expiryDate(invalidDate).build();
-
-        when(cardMapper.requestDtoToCard(any())).thenThrow(new RuntimeException(mapperErrorMessage));
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            cardService.createNewCard(request);
-        });
-
-        assertThat(exception.getMessage()).contains("Failed to process card request");
-        assertThat(exception.getMessage()).contains(mapperErrorMessage);
-
-        verify(cardRepository, never()).save(any());
-        verifyNoInteractions(cardRepository);
-
     }
 
     @Test

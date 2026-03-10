@@ -3,7 +3,11 @@ package com.example.card_management_system.controller;
 import com.example.card_management_system.dto.CardResponseDTO;
 import com.example.card_management_system.dto.CardUpdateDTO;
 import com.example.card_management_system.dto.CreateCardRequestDTO;
+import com.example.card_management_system.entity.Card;
+import com.example.card_management_system.entity.Customer;
+import com.example.card_management_system.mapper.CardMapper;
 import com.example.card_management_system.service.CardService;
+import com.example.card_management_system.util.UUIDUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,11 +31,16 @@ class CardManagementControllerTest {
     @Mock
     CardService cardService;
 
+    @Mock
+    CardMapper cardMapper;
+
     @InjectMocks
     CardController cardManagementController;
 
     private CreateCardRequestDTO cardRequest;
     private CardResponseDTO expectedResponse;
+    private Card card;
+    private Customer customer;
 
 
     @BeforeEach
@@ -45,21 +58,28 @@ class CardManagementControllerTest {
                                           .accountId("550e8400-e29b-41d4-a716-446655440000")
                                           .creditLimit("3000")
                                           .cardHolderName("cardholdername").build();
+
+        customer = Customer.builder().customerId(UUIDUtils.toUUID("561eed14-b0e4-45ec-9e6f-dc5b4238ee57")).build();
+
+        card = Card.builder().cardNumber("1234123412341234").cardType(Card.CardType.valueOf("CREDIT"))
+                   .customer(customer)
+                   .accountId(UUIDUtils.toUUID("550e8400-e29b-41d4-a716-446655440000"))
+                   .creditLimit(BigDecimal.valueOf(3000))
+                   .cardHolderName("cardholdername").build();
     }
 
     @Test
     public void givenCard_ExistingCustomer_CreatesCard() {
 
-
-        when(cardService.createNewCard(cardRequest)).thenReturn(expectedResponse);
-
+        when(cardMapper.requestDtoToCard(cardRequest)).thenReturn(card);
+        when(cardService.createNewCard(card)).thenReturn(card);
+        when(cardMapper.cardToResponseDto(card)).thenReturn(expectedResponse);
 
         ResponseEntity<CardResponseDTO> responseEntity = cardManagementController.createCard(cardRequest);
 
-
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertEquals("cardholdername", responseEntity.getBody().getCardHolderName());
-        verify(cardService).createNewCard(cardRequest);
+        verify(cardService).createNewCard(card);
     }
 
 
@@ -90,13 +110,13 @@ class CardManagementControllerTest {
     @Test
     public void givenCardId_RetrievesCard() {
 
-
-        when(cardService.getCardById("550e8400-e29b-41d4-a716-446655440000"))
-                .thenReturn(expectedResponse);
+        when(cardService.getCardById(card.getAccountId().toString()))
+                .thenReturn(card);
+        when(cardMapper.cardToResponseDto(any())).thenReturn(expectedResponse);
 
 
         ResponseEntity<CardResponseDTO> responseEntity = cardManagementController
-                .getCardById("550e8400-e29b-41d4-a716-446655440000");
+                .getCardById(String.valueOf(card.getAccountId().toString()));
 
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

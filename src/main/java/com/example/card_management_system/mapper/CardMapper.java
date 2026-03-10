@@ -3,6 +3,8 @@ package com.example.card_management_system.mapper;
 import com.example.card_management_system.dto.CardResponseDTO;
 import com.example.card_management_system.dto.CardUpdateDTO;
 import com.example.card_management_system.dto.CreateCardRequestDTO;
+import com.example.card_management_system.dto.v1.CardResponseV1DTO;
+import com.example.card_management_system.dto.v1.CreateCardRequestV1DTO;
 import com.example.card_management_system.entity.Card;
 import org.mapstruct.*;
 
@@ -21,11 +23,13 @@ public interface CardMapper {
     })
     CardResponseDTO cardToResponseDto(Card card);
 
+
     @Mappings({
             @Mapping(target = "expiryDate", expression = "java(mapStringToLastDay(dto.getExpiryDate()))"),
             @Mapping(target = "customer.customerId", source = "customerId")
     })
     Card requestDtoToCard(CreateCardRequestDTO dto);
+
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateCardFromDto(CardUpdateDTO dto, @MappingTarget Card entity);
@@ -41,4 +45,18 @@ public interface CardMapper {
             throw new RuntimeException("Invalid expiry date format. Expected yyyyMM: " + expiryDate);
         }
     }
+
+    //V1 DTOs
+    @Mappings({
+            @Mapping(source = "customer.customerId", target = "customerId"),
+            @Mapping(target = "expiryDate", dateFormat = "yyyyMM")
+
+    })
+    CardResponseV1DTO cardToResponseV1Dto(Card card);
+
+    @Mappings({
+            @Mapping(target = "expiryDate", expression = "java(mapStringToLastDay(dto.getExpiryDate()))"),
+            @Mapping(target = "customer.customerId", source = "customerId")
+    })
+    Card requestV1DtoToCard(CreateCardRequestV1DTO dto);
 }

@@ -24,18 +24,15 @@ public class CardService {
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
 
-    public CardResponseDTO getCardById(String accountId) {
+    public Card getCardById(String accountId) {
         UUID cardId = (UUIDUtils.toUUID(accountId));
 
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new EntityNotFoundException("Card not found with ID: " + accountId));
-
-        return cardMapper.cardToResponseDto(card);
+        return cardRepository.findById(cardId)
+                             .orElseThrow(() -> new EntityNotFoundException("Card not found with ID: " + accountId));
     }
 
-    public CardResponseDTO createNewCard(CreateCardRequestDTO cardRequestDTO) {
+    public Card createNewCard(Card newCard) {
         try {
-            Card newCard = cardMapper.requestDtoToCard(cardRequestDTO);
 
             newCard.setAccountId(UUID.randomUUID());
             newCard.setAccountNumber(UUID.randomUUID());
@@ -45,7 +42,7 @@ public class CardService {
             Card savedCard = cardRepository.save(newCard);
             log.info("Successfully created and saved new card for account: {}", savedCard.getAccountId());
 
-            return cardMapper.cardToResponseDto(savedCard);
+            return savedCard;
 
         } catch (RuntimeException e) {
             log.error("Error while creating card: {}:", e.getMessage());
@@ -58,7 +55,7 @@ public class CardService {
         try {
             UUID accountUuid = UUIDUtils.toUUID(accountId);
             Card existingCard = cardRepository.findById(accountUuid)
-                    .orElseThrow(() -> new RuntimeException("Card not found with ID: " + accountId));
+                                              .orElseThrow(() -> new RuntimeException("Card not found with ID: " + accountId));
 
             cardMapper.updateCardFromDto(cardUpdateDTO, existingCard);
 
@@ -82,15 +79,15 @@ public class CardService {
         }
 
         return cardList.stream()
-                .map(cardMapper::cardToResponseDto)
-                .toList();
+                       .map(cardMapper::cardToResponseDto)
+                       .toList();
     }
 
     public void deleteCard(String accountId) {
         UUID accountUuid = UUIDUtils.toUUID(accountId);
 
         Card existingCard = cardRepository.findById(accountUuid)
-                .orElseThrow(() -> new EntityNotFoundException("Card not found with ID: " + accountId));
+                                          .orElseThrow(() -> new EntityNotFoundException("Card not found with ID: " + accountId));
         try {
             cardRepository.delete(existingCard);
             log.info("Successfully delete card for account: {}", accountId);

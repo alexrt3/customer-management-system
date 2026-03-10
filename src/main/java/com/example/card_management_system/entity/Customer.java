@@ -16,19 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Customer {
-    /*
-        1.	customerID(UUID): Unique Identifier for each card
-        2.	Name(String) – Name of the card holder
-        3.	emailAddress(String): email address for Customer
-        4.	phoneNumber(String): Phone number of the customer
-        5.	phoneType(Enum): Type of phone (mobile, home, work)
-        6.	addressLine1(String): US postal address line1
-        7.	AddressLine2 (String): address line 2
-        8.	cityName(String)– City Name
-        9.	state(String) – State name
-        10.	zipCode(String) – 5-digit zip code
-
-    */
 
     @Column(name="customerId")
     @Id
