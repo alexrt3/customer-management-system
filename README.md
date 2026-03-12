@@ -33,8 +33,25 @@ The **Card Management System** serves as a centralized backend for financial ser
 * **DTO Pattern**: Utilized **Data Transfer Objects** (where all fields are handled as `Strings`) to decouple the API contract from the database layer, allowing for use of our own validation.
 * **Mapper Pattern**: Implemented dedicated mapper components to handle transformation logic between entities and DTO's
 
+  <img align="center" width="400" height="711" alt="CMS-architecture-flow-chart" src="https://github.com/user-attachments/assets/96ae8ee6-23a4-4184-bb94-5f13b995aa18" />
+
 ---
 
 ## Logging & Error Handling
 * **SLF4J/Logback:** Integrated the SLF4J logging framework to track authentication success/failure and API requests.
-* **Global Exception Handler**: Implemented a `@ControllerAdvice` component to watch for and catch system-wide errors and return consistent, user-friendly JSON error messages instead of raw stack traces and default Java messages. 
+* **Global Exception Handler**: Implemented a `@ControllerAdvice` component to watch for and catch system-wide errors and return consistent, user-friendly JSON error messages instead of raw stack traces and default Java messages.
+
+## Data Models 
+* **Entities**
+<img width="624" height="372" alt="image" src="https://github.com/user-attachments/assets/862095d4-e092-4472-bc80-1d66f345b161" />
+
+* **DTOs**
+
+<img width="663" height="322" alt="image" src="https://github.com/user-attachments/assets/4499146c-823a-4f5c-8df8-02ebc578a725" />
+
+<img width="665" height="378" alt="image" src="https://github.com/user-attachments/assets/6d2d90a7-3940-4c9b-8172-026cc0ef0a59" />
+
+* **V1 DTOs**
+
+<img width="636" height="375" alt="image" src="https://github.com/user-attachments/assets/c403d587-ef03-4fd6-a4cb-778a621ca3b5" />
+
