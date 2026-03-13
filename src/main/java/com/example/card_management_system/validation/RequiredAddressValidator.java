@@ -1,9 +1,7 @@
 package com.example.card_management_system.validation;
 
 
-import com.example.card_management_system.dto.CardUpdateDTO;
 import com.example.card_management_system.dto.CustomerUpdateDTO;
-import com.example.card_management_system.entity.Customer;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
