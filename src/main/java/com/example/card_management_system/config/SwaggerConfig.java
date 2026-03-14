@@ -17,9 +17,9 @@ public class SwaggerConfig {
         String bearerAuth = "bearerAuth";
         String basicAuth = "basicAuth";
 
-        return new OpenAPI().info(new Info().title("Card Management System API")
+        return new OpenAPI().info(new Info().title("Customer Management System API")
                                             .version("1.0")
-                                            .description("Secure API for card management system"))
+                                            .description("Secure API for customer management system"))
                             .components(new Components()
                                     .addSecuritySchemes(bearerAuth, new SecurityScheme()
                                             .name(bearerAuth)
