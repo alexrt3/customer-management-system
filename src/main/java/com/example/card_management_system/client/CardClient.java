@@ -30,7 +30,6 @@ public class CardClient {
                 return Arrays.asList(response);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Could not get cards for customer: {} from card service", customerId);
         }
         return List.of();
