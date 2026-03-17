@@ -1,8 +1,11 @@
 package com.example.card_management_system.service;
 
+import com.example.card_management_system.client.CardClient;
 import com.example.card_management_system.dto.CreateCustomerRequestDTO;
 import com.example.card_management_system.dto.CustomerResponseDTO;
 import com.example.card_management_system.dto.CustomerUpdateDTO;
+import com.example.card_management_system.dto.v1.CardResponseV1DTO;
+import com.example.card_management_system.dto.v1.CustomerDetailsV1DTO;
 import com.example.card_management_system.entity.Customer;
 import com.example.card_management_system.mapper.CustomerMapper;
 import com.example.card_management_system.repository.CustomerRepository;
@@ -14,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +34,9 @@ class CustomerServiceTest {
     @Mock
     private CustomerMapper customerMapper;
 
+    @Mock
+    private CardClient cardClient;
+
     @InjectMocks
     private CustomerService customerService;
 
@@ -39,8 +46,8 @@ class CustomerServiceTest {
 
         Customer customer = Customer.builder().customerId(customerId).build();
         CustomerResponseDTO customerResponseDTO = CustomerResponseDTO.builder()
-                .customerID(customerId.toString())
-                .build();
+                                                                     .customerID(customerId.toString())
+                                                                     .build();
 
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
@@ -77,7 +84,7 @@ class CustomerServiceTest {
 
         Customer customer = Customer.builder().build();
         CreateCustomerRequestDTO request = CreateCustomerRequestDTO.builder()
-                .build();
+                                                                   .build();
         Customer savedCustomer = Customer.builder().firstName(customer.getFirstName()).build();
         CustomerResponseDTO response = CustomerResponseDTO.builder().build();
 
@@ -121,14 +128,14 @@ class CustomerServiceTest {
         UUID customerId = UUID.randomUUID();
 
         Customer existingCustomer = Customer.builder()
-                .customerId(customerId)
-                .firstName("John")
-                .emailAddress("old@email.com")
-                .build();
+                                            .customerId(customerId)
+                                            .firstName("John")
+                                            .emailAddress("old@email.com")
+                                            .build();
 
         CustomerUpdateDTO customerUpdateDTO = CustomerUpdateDTO.builder()
-                .emailAddress("new@email.com")
-                .build();
+                                                               .emailAddress("new@email.com")
+                                                               .build();
 
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(existingCustomer));
@@ -147,17 +154,51 @@ class CustomerServiceTest {
         UUID invalidId = UUID.randomUUID();
 
         CustomerUpdateDTO customerUpdateDTO = CustomerUpdateDTO.builder()
-                .emailAddress("new@email.com")
-                .build();
+                                                               .emailAddress("new@email.com")
+                                                               .build();
 
         when(customerRepository.findById(invalidId)).thenThrow(new RuntimeException());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, ()-> {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             customerService.updateCustomer(invalidId.toString(), customerUpdateDTO);
         });
 
         assertTrue(exception.getMessage().contains("Failed to update customer"));
         verify(customerMapper, never()).customerToResponseDto(any());
         verify(customerRepository, never()).save(any());
+    }
+
+    @Test
+    public void givenValidCustomerId_whenGetCustomerCardsByIdCalled_thenReturnsCustomerDetails() {
+        UUID customerId = UUID.randomUUID();
+
+        Customer existingCustomer = Customer.builder()
+                                            .customerId(customerId)
+                                            .firstName("John")
+                                            .lastName("Smith")
+                                            .emailAddress("new@email.com")
+                                            .build();
+
+        CardResponseV1DTO cardResponse = CardResponseV1DTO.builder()
+                                                          .cardNumber("4444333322221111")
+                                                          .customerId(customerId.toString())
+                                                          .build();
+
+        CardResponseV1DTO cardResponse2 = CardResponseV1DTO.builder()
+                                                           .cardNumber("4111111111111111")
+                                                           .customerId(customerId.toString())
+                                                           .build();
+
+        List<CardResponseV1DTO> cardResponseList = List.of(cardResponse, cardResponse2);
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(existingCustomer));
+        when(cardClient.getCardsByCustomerId(customerId.toString())).thenReturn(cardResponseList);
+
+        CustomerDetailsV1DTO result = customerService.getCustomerCardsById(customerId.toString());
+
+        verify(customerRepository, times(1)).findById(customerId);
+        verify(cardClient, times(1)).getCardsByCustomerId(customerId.toString());
+        assertThat(result.getCards()).hasSize(2);
+        assertThat(result.getEmail()).isEqualTo("new@email.com");
     }
 }
