@@ -3,6 +3,7 @@ package com.example.card_management_system.controller;
 import com.example.card_management_system.dto.CreateCustomerRequestDTO;
 import com.example.card_management_system.dto.CustomerResponseDTO;
 import com.example.card_management_system.dto.CustomerUpdateDTO;
+import com.example.card_management_system.dto.v1.CustomerDetailsV1DTO;
 import com.example.card_management_system.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -53,6 +54,17 @@ public class CustomerController {
 
         log.info("PUT /customers/{}- successfully updated customer", customerId);
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/{customerId}/details")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomerDetailsV1DTO> getCustomerCardsById(@PathVariable String customerId) {
+        log.info("GET /find/cards/{}/all- retrieving customer card details", customerId);
+
+        CustomerDetailsV1DTO cards = customerService.getCustomerCardsById(customerId);
+
+        log.info("GET /find/cards/{}/all- successfully retrieved customer details", customerId);
+        return ResponseEntity.ok(cards);
     }
 
 }

@@ -1,8 +1,11 @@
 package com.example.card_management_system.service;
 
+import com.example.card_management_system.client.CardClient;
 import com.example.card_management_system.dto.CreateCustomerRequestDTO;
 import com.example.card_management_system.dto.CustomerResponseDTO;
 import com.example.card_management_system.dto.CustomerUpdateDTO;
+import com.example.card_management_system.dto.v1.CardResponseV1DTO;
+import com.example.card_management_system.dto.v1.CustomerDetailsV1DTO;
 import com.example.card_management_system.entity.Customer;
 import com.example.card_management_system.mapper.CustomerMapper;
 import com.example.card_management_system.repository.CustomerRepository;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,12 +25,13 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final CardClient cardClient;
 
     public CustomerResponseDTO getCustomerById(String customerId) {
         UUID customerUuid = UUIDUtils.toUUID(customerId);
 
         Customer customer = customerRepository.findById(customerUuid)
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found with ID: " + customerId));
+                                              .orElseThrow(() -> new EntityNotFoundException("Customer not found with ID: " + customerId));
 
         log.info("Found customer: {}", customerId);
         return customerMapper.customerToResponseDto(customer);
@@ -54,7 +59,7 @@ public class CustomerService {
             UUID customerUuid = UUIDUtils.toUUID(customerId);
 
             Customer existingCustomer = customerRepository.findById(customerUuid)
-                    .orElseThrow(() -> new EntityNotFoundException("Customer not found with ID: " + customerId));
+                                                          .orElseThrow(() -> new EntityNotFoundException("Customer not found with ID: " + customerId));
 
             customerMapper.updateCustomerFromDto(customerUpdateDTO, existingCustomer);
 
@@ -66,6 +71,29 @@ public class CustomerService {
             log.error("Could not update customer: {}", customerId);
             throw new RuntimeException("Failed to update customer: " + e.getMessage());
         }
+    }
+
+    public CustomerDetailsV1DTO getCustomerCardsById(String customerId) {
+        try {
+            UUID customerUuid = UUIDUtils.toUUID(customerId);
+
+            Customer customer = customerRepository.findById(customerUuid)
+                                                  .orElseThrow(() -> new EntityNotFoundException("Customer not found with ID: " + customerId));
+
+            List<CardResponseV1DTO> customerCards = cardClient.getCardsByCustomerId(customerId);
+
+            return CustomerDetailsV1DTO.builder()
+                                       .firstName(customer.getFirstName())
+                                       .lastName(customer.getLastName())
+                                       .email(customer.getEmailAddress())
+                                       .cards(customerCards)
+                                       .build();
+
+        } catch (RuntimeException e) {
+            log.error("Error when attempting to get cards for customer: {}", customerId);
+            throw new RuntimeException("Failed to get customer cards: " + e.getMessage());
+        }
+
     }
 
 }
